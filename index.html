@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
   <style>
     /* ============================================================
        CSS CUSTOM PROPERTIES
@@ -561,6 +562,33 @@
     .file-arr { color: var(--text-muted); font-size: 1rem; flex-shrink: 0; }
     .drawer-state { padding: 52px 24px; text-align: center; color: var(--text-muted); font-size: .9rem; }
     .drawer-state.err { color: #b91c1c; }
+    /* Markdown reading view */
+    .md-back {
+      display: flex; align-items: center; gap: 6px; padding: 10px 16px;
+      border-bottom: 1px solid var(--border); background: var(--brand-bg);
+      font-size: .8rem; color: var(--brand); cursor: pointer;
+      border: none; width: 100%; text-align: left; font-family: inherit;
+      flex-shrink: 0;
+    }
+    .md-back:hover { background: var(--brand-pale); }
+    .md-body {
+      flex: 1; overflow-y: auto; padding: 24px 22px;
+      font-size: .88rem; line-height: 1.75; color: var(--text-primary);
+    }
+    .md-body h1 { font-size: 1.25rem; font-weight: 700; margin: 0 0 14px; color: var(--brand-dark); }
+    .md-body h2 { font-size: 1.05rem; font-weight: 600; margin: 22px 0 8px; color: var(--brand); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    .md-body h3 { font-size: .95rem; font-weight: 600; margin: 16px 0 6px; }
+    .md-body p  { margin: 0 0 10px; }
+    .md-body ul, .md-body ol { margin: 0 0 10px 20px; }
+    .md-body li { margin-bottom: 4px; }
+    .md-body strong { font-weight: 600; }
+    .md-body em { font-style: italic; }
+    .md-body code { background: #f3f4f6; padding: 1px 5px; border-radius: 3px; font-size: .82rem; font-family: monospace; }
+    .md-body pre { background: #f3f4f6; padding: 12px; border-radius: 6px; overflow-x: auto; margin: 0 0 12px; }
+    .md-body pre code { background: none; padding: 0; }
+    .md-body hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+    .md-body a { color: var(--brand); text-decoration: underline; }
+    .md-body blockquote { border-left: 3px solid var(--brand-light); margin: 0 0 10px; padding: 4px 12px; color: var(--text-secondary); background: var(--brand-bg); border-radius: 0 4px 4px 0; }
   </style>
 </head>
 <body>
@@ -1184,6 +1212,7 @@ function renderFiles(files) {
     var isDir = f.mimeType === 'application/vnd.google-apps.folder';
     var ico = fIco(f.mimeType, f.name);
     var age = fAge(f.modifiedTime);
+    var isMd = !isDir && f.name.toLowerCase().endsWith('.md');
     if (isDir) {
       return '<div class="file-row" onclick="drillInto(\'' + f.id + '\',\'' + f.name.replace(/\\/g,'\\\\').replace(/'/g,'\\x27') + '\')">' +
         '<span class="file-ico">' + ico + '</span>' +
@@ -1191,12 +1220,71 @@ function renderFiles(files) {
         '<span class="file-age">' + age + '</span>' +
         '<span class="file-arr">\u203a</span></div>';
     }
+    if (isMd) {
+      return '<div class="file-row" onclick="openMarkdown(\'' + f.id + '\',\'' + f.name.replace(/\\/g,'\\\\').replace(/'/g,'\\x27') + '\')">' +
+        '<span class="file-ico">📝</span>' +
+        '<span class="file-name">' + fEsc(f.name) + '</span>' +
+        '<span class="file-badge">Read</span>' +
+        '<span class="file-age">' + age + '</span></div>';
+    }
     return '<a class="file-row" href="' + (f.webViewLink || '#') + '" target="_blank" rel="noopener noreferrer">' +
       '<span class="file-ico">' + ico + '</span>' +
       '<span class="file-name">' + fEsc(f.name) + '</span>' +
       '<span class="file-badge">' + fBadge(f.mimeType, f.name) + '</span>' +
       '<span class="file-age">' + age + '</span></a>';
   }).join('');
+}
+
+async function openMarkdown(fileId, fileName) {
+  // Switch drawer to reading view
+  var drawer = document.getElementById('drawer');
+  var hdr = drawer.querySelector('.drawer-hdr');
+  var body = document.getElementById('drawerBody');
+
+  // Save current folder so Back can return to it
+  var returnFolderId = _stack[_stack.length - 1].id;
+
+  // Swap header to reading mode
+  hdr.innerHTML =
+    '<button class="md-back" onclick="mdBack(\'' + returnFolderId + '\')">' +
+    '\u2190 Back' +
+    '</button>' +
+    '<div style="flex:1;padding:0 16px;font-size:.82rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + fEsc(fileName) + '</div>' +
+    '<div style="padding-right:12px;">' +
+    '<button class="drawer-close" onclick="closeDrawer()" aria-label="Close">&#x2715;</button>' +
+    '</div>';
+
+  body.innerHTML = '<div class="drawer-state">Loading\u2026</div>';
+
+  try {
+    var resp = await fetch(
+      'https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media',
+      {headers: {Authorization: 'Bearer ' + _token}}
+    );
+    if (!resp.ok) throw new Error('Error ' + resp.status);
+    var text = await resp.text();
+    var html = (typeof marked !== 'undefined') ? marked.parse(text) : '<pre>' + fEsc(text) + '</pre>';
+    body.className = '';
+    body.innerHTML = '<div class="md-body">' + html + '</div>';
+  } catch(err) {
+    body.innerHTML = '<div class="drawer-state err">Could not load file \u2014 ' + err.message + '</div>';
+  }
+}
+
+function mdBack(folderId) {
+  // Restore normal drawer header
+  var hdr = document.getElementById('drawer').querySelector('.drawer-hdr');
+  hdr.innerHTML =
+    '<div class="drawer-crumb" id="drawerCrumb"></div>' +
+    '<div class="drawer-acts">' +
+    '<a id="drawerDriveLink" href="#" target="_blank" rel="noopener noreferrer" class="drawer-ext-btn">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+    ' Open in Drive</a>' +
+    '<button class="drawer-close" id="drawerClose" onclick="closeDrawer()" aria-label="Close file browser">&#x2715;</button>' +
+    '</div>';
+  document.getElementById('drawerBody').className = 'drawer-body';
+  renderCrumb();
+  loadFolder(folderId);
 }
 
 function drawerState(msg, err) {
