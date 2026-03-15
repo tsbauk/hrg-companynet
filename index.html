@@ -1119,7 +1119,8 @@ function initFileDrawer() {
   document.getElementById('drawerBackdrop').onclick = closeDrawer;
   document.getElementById('cardsGrid').addEventListener('click', function(e) {
     var chip = e.target.closest('.sf-chip');
-    var browseA = e.target.closest('a.card-drive-btn');
+    // Browse button: <a href="drive..."><button class="btn-browse">...</button></a>
+    var browseA = e.target.closest('a[href*="drive.google.com"]:not(.sf-chip)');
     if (chip && !chip.classList.contains('locked')) {
       e.preventDefault();
       var id = extractDriveId(chip.href);
