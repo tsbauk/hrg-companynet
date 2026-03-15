@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HRG Tree Surgeons — Internal document portal">
+  <title>HRG CompanyNet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       CSS CUSTOM PROPERTIES
+    ============================================================ */
+    :root {
+      --brand-dark:    #1a4731;
+      --brand:         #2d6a4f;
+      --brand-mid:     #40916c;
+      --brand-light:   #52b788;
+      --brand-pale:    #d8f3dc;
+      --brand-bg:      #f6faf8;
+      --card-bg:       #ffffff;
+      --text-primary:  #111e17;
+      --text-secondary:#4a5e4a;
+      --text-muted:    #8a9e8a;
+      --border:        #e0ece6;
+      --restricted:    #b35900;
+      --restricted-bg: #fff8f0;
+      --shadow-sm:     0 1px 3px rgba(0,0,0,0.07);
+      --shadow-md:     0 4px 16px rgba(0,0,0,0.1);
+      --radius:        10px;
+      --sidebar-w:     248px;
+      --header-h:      60px;
+      --search-h:      53px;
+      --top-offset:    calc(var(--header-h) + var(--search-h));
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--brand-bg);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: inherit; }
+
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      height: var(--header-h);
+      background: var(--brand-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header-logo img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+    .header-title { color: white; }
+    .header-title .co   { font-size: 11px; font-weight: 500; opacity: 0.65; letter-spacing: 0.04em; }
+    .header-title .name { font-size: 19px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.1; }
+    .header-meta {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      text-align: right;
+    }
+
+    /* ============================================================
+       SEARCH BAR
+    ============================================================ */
+    .search-bar {
+      position: sticky;
+      top: var(--header-h);
+      z-index: 198;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 9px 24px;
+      height: var(--search-h);
+    }
+    .search-wrap { position: relative; max-width: 580px; }
+    .search-ico {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+    }
+    .search-input {
+      width: 100%;
+      padding: 8px 80px 8px 36px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13.5px;
+      color: var(--text-primary);
+      background: var(--brand-bg);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-input:focus {
+      border-color: var(--brand-light);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(82,183,136,0.12);
+    }
+    .search-hint {
+      position: absolute;
+      right: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 11px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-results {
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      box-shadow: var(--shadow-md);
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+      z-index: 300;
+    }
+    .search-results.open { display: block; }
+    .sr-group {
+      padding: 8px 14px 3px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .sr-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .sr-item:hover { background: var(--brand-bg); }
+    .sr-item .sr-ico { color: var(--brand-mid); flex-shrink: 0; display: flex; }
+    .sr-item .sr-name { font-size: 13px; font-weight: 500; }
+    .sr-item .sr-path { font-size: 11px; color: var(--text-muted); }
+    .sr-item mark { background: var(--brand-pale); color: var(--brand-dark); border-radius: 2px; padding: 0 1px; }
+    .sr-empty { padding: 14px; font-size: 13px; color: var(--text-muted); }
+
+    /* ============================================================
+       PAGE LAYOUT
+    ============================================================ */
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      min-height: calc(100vh - var(--header-h) - var(--search-h));
+    }
+
+    /* ============================================================
+       SIDEBAR
+    ============================================================ */
+    .sidebar {
+      background: white;
+      border-right: 1px solid var(--border);
+      padding: 18px 14px;
+      position: sticky;
+      top: var(--top-offset);
+      height: calc(100vh - var(--top-offset));
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+    .sb-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      padding: 0 6px;
+      margin-bottom: 8px;
+    }
+    .sb-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+    /* Sidebar Quick Access */
+    .sb-qa-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 7px;
+      margin-bottom: 2px;
+      transition: background 0.12s;
+    }
+    .sb-qa-item:hover { background: var(--brand-bg); }
+    .sb-qa-ico { color: var(--brand-mid); display: flex; flex-shrink: 0; }
+    .sb-qa-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sb-qa-sec { font-size: 10px; color: var(--text-muted); }
+
+    /* Sidebar Navigation */
+    .sb-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 8px;
+      border-radius: 7px;
+      margin-bottom: 1px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      transition: background 0.12s, color 0.12s;
+      border-left: 2px solid transparent;
+    }
+    .sb-nav-item:hover { background: var(--brand-bg); color: var(--brand-dark); }
+    .sb-nav-item.active {
+      background: var(--brand-pale);
+      color: var(--brand-dark);
+      font-weight: 600;
+      border-left-color: var(--brand);
+    }
+    .sb-nav-num { font-size: 10px; color: var(--text-muted); min-width: 22px; font-variant-numeric: tabular-nums; }
+    .sb-nav-lock { margin-left: auto; color: var(--restricted); display: flex; }
+
+    /* ============================================================
+       MAIN CONTENT
+    ============================================================ */
+    .main { padding: 22px 24px 40px; }
+
+    /* Quick Access Strip */
+    .qa-strip {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 22px;
+    }
+    .qa-strip-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .qa-strip-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+    .qa-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .qa-tile {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 13px;
+      background: var(--brand-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+    .qa-tile:hover {
+      border-color: var(--brand-light);
+      background: white;
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+    .qa-tile-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ico-pdf    { background: #fde8e8; color: #c0392b; }
+    .ico-word   { background: #e8eef8; color: #2563eb; }
+    .ico-excel  { background: #e8f5e9; color: #16a34a; }
+    .ico-folder { background: #fff3e0; color: #c0580a; }
+    .ico-other  { background: var(--brand-pale); color: var(--brand-dark); }
+    .qa-tile-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 2px;
+    }
+    .qa-tile-sec { font-size: 10.5px; color: var(--text-muted); }
+
+    /* ============================================================
+       SECTION CARDS
+    ============================================================ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .card-accent-bar { height: 5px; flex-shrink: 0; }
+    .card-body { padding: 18px 20px 16px; flex: 1; }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .card-ico {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-num {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .card-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 5px;
+      line-height: 1.25;
+    }
+    .card-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+    .sf-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .sf-list { display: flex; flex-wrap: wrap; gap: 5px; }
+    .sf-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 9px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 500;
+      background: var(--brand-bg);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .sf-chip:hover {
+      background: var(--brand-pale);
+      border-color: var(--brand-light);
+      color: var(--brand-dark);
+    }
+    .sf-chip.locked {
+      color: var(--restricted);
+      border-color: #ffd8a8;
+      background: var(--restricted-bg);
+    }
+    .sf-chip.locked:hover { border-color: var(--restricted); }
+
+    /* Card Footer */
+    .card-foot {
+      padding: 11px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fcfcfc;
+    }
+    .card-updated { font-size: 10.5px; color: var(--text-muted); }
+    .btn-browse {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+    .btn-browse:hover { background: var(--brand-dark); }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    .footer {
+      margin-top: 24px;
+      padding: 15px 22px;
+      background: var(--brand-dark);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+    }
+    .footer strong { color: rgba(255,255,255,0.85); }
+
+    /* ============================================================
+       BACK TO TOP
+    ============================================================ */
+    #btt {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      width: 40px;
+      height: 40px;
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+      transition: background 0.15s;
+      z-index: 100;
+    }
+    #btt:hover { background: var(--brand-dark); }
+    #btt.show { display: flex; }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 960px) {
+      .qa-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main { padding: 14px 16px 32px; }
+      .header { padding: 0 16px; }
+      .search-bar { padding: 9px 16px; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .footer { flex-direction: column; gap: 6px; text-align: center; }
+    }
+    @media (max-width: 520px) {
+      .qa-grid { grid-template-columns: 1fr 1fr; }
+      .header-title .name { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+============================================================ -->
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">
+      <img src="hrg-Logo.png" alt="HRG Tree Surgeons">
+    </div>
+    <div class="header-title">
+      <div class="co">HRG Tree Surgeons</div>
+      <div class="name">CompanyNet</div>
+    </div>
+  </div>
+  <div class="header-meta" id="headerMeta"></div>
+</header>
+
+<!-- ============================================================
+     SEARCH BAR
+============================================================ -->
+<div class="search-bar">
+  <div class="search-wrap">
+    <div class="search-ico">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+    </div>
+    <input id="searchInput" type="text" class="search-input"
+           placeholder="Search all sections, sub-folders and documents..."
+           autocomplete="off" aria-label="Search CompanyNet">
+    <span class="search-hint">/ to search</span>
+    <div id="searchResults" class="search-results" role="listbox" aria-live="polite"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE LAYOUT
+============================================================ -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-title">Quick Access</div>
+    <div id="sbQA"></div>
+    <hr class="sb-divider">
+    <div class="sb-title">Sections</div>
+    <nav id="sbNav"></nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- Quick Access Strip -->
+    <div class="qa-strip">
+      <div class="qa-strip-hdr">
+        <div class="qa-strip-title">Most Used Documents &amp; Folders</div>
+      </div>
+      <div class="qa-grid" id="qaGrid"></div>
+    </div>
+
+    <!-- Section Cards -->
+    <div class="cards-grid" id="cardsGrid"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <strong>HRG CompanyNet</strong>
+      <span id="footerMeta"></span>
+      <span id="footerContact"></span>
+    </footer>
+
+  </main>
+</div>
+
+<!-- Back to Top -->
+<button id="btt" aria-label="Back to top">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m18 15-6-6-6 6"/>
+  </svg>
+</button>
+
+<!-- ============================================================
+     SCRIPT
+============================================================ -->
+<script>
+// =============================================================
+//  HRG COMPANYNET — CONFIGURATION
+//  ─────────────────────────────────────────────────────────────
+//  This is the ONLY section you need to edit.
+//
+//  HOW TO ADD A GOOGLE DRIVE LINK:
+//    1. Open the folder or file in Google Drive
+//    2. Copy the URL from your browser bar (for folders)
+//       OR right-click → Share → Copy link (for files)
+//    3. Paste it into the matching driveUrl: "" field below
+//    4. Save and re-upload the file to GitHub
+//
+//  CHANGE lastUpdated to today's date whenever you re-upload.
+// =============================================================
+
+const CONFIG = {
+
+  // ── SITE SETTINGS ──────────────────────────────────────────
+  companyName:  "HRG Tree Surgeons",
+  portalName:   "CompanyNet",
+  lastUpdated:  "March 2026",
+  contact:      "Questions? Contact the office manager.",
+
+  // ── QUICK ACCESS ───────────────────────────────────────────
+  // Up to 8 entries. type: "pdf" | "word" | "excel" | "folder" | "other"
+  quickAccess: [
+    { name: "H&S Policy 2025",         section: "06 H&S",       localUrl: "06 Health and Safety/01 H&S Management System/",     driveUrl: "https://drive.google.com/drive/folders/17r517K0IMoJnz5hcM3oCmqz10TL6geIW", type: "pdf"    },
+    { name: "Staff Handbook",           section: "05 People",    localUrl: "05 People and HR/08 HR Handbook/",                   driveUrl: "https://drive.google.com/drive/folders/1Z7VbgK3Ff9N--kFFhTnACOb1NsJCH6HI", type: "pdf"    },
+    { name: "Risk Assessment Template", section: "06 H&S",       localUrl: "06 Health and Safety/02 Risk Management/",           driveUrl: "https://drive.google.com/drive/folders/1XYV0CS11SiX0FsmeIdHsQtY0E324TgCL", type: "word"   },
+    { name: "Vehicle Daily Check",      section: "07 Operations",localUrl: "07 Operations/Vehicles/",                            driveUrl: "https://drive.google.com/drive/folders/1TfrsKFlMt-y79MkPMm9VYaAO4uOt1X2P", type: "word"   },
+    { name: "Accident Report Form",     section: "06 H&S",       localUrl: "06 Health and Safety/03 Incident Management/",       driveUrl: "https://drive.google.com/drive/folders/1hD4tY4dymJjVa0cxYV4B4Wqb2Dn9i3QC", type: "word"   },
+    { name: "Company Certificates",     section: "08 Compliance",localUrl: "08 Compliance and Registers/Certificates/",          driveUrl: "https://drive.google.com/drive/folders/1EAC2aDtBEiaJX0vMir4z5RrJIipygd8x", type: "folder" },
+    { name: "Toolbox Talks",            section: "09 Library",   localUrl: "09 Library and Reference/Meeting and Toolbox Talk Resources/", driveUrl: "https://drive.google.com/drive/folders/1pauA0VitNpMPxYU-npSoAM-Xg4_QQjlP", type: "folder" },
+    { name: "CompanyNet Index",         section: "00 Start Here",localUrl: "00 Start Here/CompanyNet Index.md",                  driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", type: "other"  }
+  ],
+
+  // ── SECTIONS ───────────────────────────────────────────────
+  sections: [
+    {
+      id: "s00", number: "00", name: "Start Here",
+      description: "Your first stop. Includes the master index, how-to guide, document naming rules, and the new starter guide.",
+      localUrl: "00 Start Here/", driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW",
+      accent: "#2d6a4f", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "CompanyNet Index",          localUrl: "00 Start Here/CompanyNet Index.md",                        driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false },
+        { name: "How to Use CompanyNet",     localUrl: "00 Start Here/How to Use CompanyNet.md",                   driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false },
+        { name: "Document Naming Rules",     localUrl: "00 Start Here/Document Naming Rules.md",                   driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false },
+        { name: "New Starter Guide",         localUrl: "00 Start Here/New Starter Guide.md",                       driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false },
+        { name: "Most Used Files",           localUrl: "00 Start Here/Most Used Files/",                           driveUrl: "https://drive.google.com/drive/folders/1m4SUNBi4_qqtN2afDtEDix92UYq9Ki0w", locked: false },
+        { name: "Restricted Folders Guide",  localUrl: "00 Start Here/RESTRICTED FOLDERS - Action Required.md",    driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false }
+      ]
+    },
+    {
+      id: "s01", number: "01", name: "Leadership and Company",
+      description: "Vision, mission and values, company structure chart, business plan, company handbook, and all-company policies.",
+      localUrl: "01 Leadership and Company/", driveUrl: "https://drive.google.com/drive/folders/1CyOZM9YQnXvlpNNtIby4CNlvYMjG61NE",
+      accent: "#3a5a8c", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "Business Plan and Strategy", localUrl: "01 Leadership and Company/Business Plan and Strategy/", driveUrl: "https://drive.google.com/drive/folders/18w7j9rAppzCwji2vOZLeUObWQ5YYBHFF", locked: false },
+        { name: "Company Handbook",           localUrl: "01 Leadership and Company/Company Handbook/",           driveUrl: "https://drive.google.com/drive/folders/10erwrfwWrDk-rrS1E7l6uA_Tl6b7MI2Q", locked: false },
+        { name: "Policies",                   localUrl: "01 Leadership and Company/Policies/",                   driveUrl: "https://drive.google.com/drive/folders/1HA8s-2mE_xyXg94mQehvQwz9nHmJJVkN", locked: false },
+        { name: "Structure Chart",            localUrl: "01 Leadership and Company/Structure Chart/",            driveUrl: "https://drive.google.com/drive/folders/1yQrPEYnGHmZSyuZCCdOkGIeajbQcKF3y", locked: false },
+        { name: "Vision Mission and Values",  localUrl: "01 Leadership and Company/Vision Mission and Values/",  driveUrl: "https://drive.google.com/drive/folders/1Bl3CT6nHqiLCg4hsLBBC-t5XWTAoF7mx", locked: false }
+      ]
+    },
+    {
+      id: "s02", number: "02", name: "Finance and Commercial",
+      description: "Accountancy, banking, pricing and rates, insurances, tenders, and terms and conditions.",
+      localUrl: "02 Finance and Commercial/", driveUrl: "https://drive.google.com/drive/folders/1bNe07aD-9URz3BHnJ_ujekCRY5vB5PQs",
+      accent: "#7a6230", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "Accountancy",          localUrl: "02 Finance and Commercial/Accountancy/",          driveUrl: "https://drive.google.com/drive/folders/1Uzb-HZljhkgE7u6mq2yJEP5MZPLmOef8", locked: true  },
+        { name: "Banking",              localUrl: "02 Finance and Commercial/Banking/",              driveUrl: "https://drive.google.com/drive/folders/1Xj9fy0rMp_QUVKt4ZuZISlJmKZko1MoQ", locked: true  },
+        { name: "Insurances",           localUrl: "02 Finance and Commercial/Insurances/",           driveUrl: "https://drive.google.com/drive/folders/1PtAhaeTJftcN-fherptDy3JwXk3Rsm1E", locked: false },
+        { name: "Pricing and Rates",    localUrl: "02 Finance and Commercial/Pricing and Rates/",    driveUrl: "https://drive.google.com/drive/folders/1AzExGfeHhmfeTVzycMztd1CeAyY2VgRW", locked: true  },
+        { name: "Tenders",              localUrl: "02 Finance and Commercial/Tenders/",              driveUrl: "https://drive.google.com/drive/folders/1tIOsk4TIjUwJIh_Luqf3LHlsiROE05pd", locked: true  },
+        { name: "Terms and Conditions", localUrl: "02 Finance and Commercial/Terms and Conditions/", driveUrl: "https://drive.google.com/drive/folders/1wuE4qxocT_5GLEv53Dp7UabCtu0HrSzF", locked: false }
+      ]
+    },
+    {
+      id: "s03", number: "03", name: "Sales and Marketing",
+      description: "Brand assets, logos, letterheads, marketing materials, proposal templates, case studies, and testimonials.",
+      localUrl: "03 Sales and Marketing/", driveUrl: "https://drive.google.com/drive/folders/1AMNIZ9EnHPcUHYrSVwdC4mCmotrRxNzA",
+      accent: "#5a7a3a", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "Brand Assets",                      localUrl: "03 Sales and Marketing/Brand Assets/",                      driveUrl: "https://drive.google.com/drive/folders/18t9t5MM7UD8NoqI5uU1T6V_wa9V-SHDx", locked: false },
+        { name: "Case Studies",                      localUrl: "03 Sales and Marketing/Case Studies/",                      driveUrl: "https://drive.google.com/drive/folders/16YoSPY52jpG-MuKHF7SNFBqHxHGDZUdd", locked: false },
+        { name: "HRG Photos",                        localUrl: "03 Sales and Marketing/HRG Photos/",                        driveUrl: "https://drive.google.com/drive/folders/1RL64jp2Lba-zh-H5m59yt0X4madSjr-n", locked: false },
+        { name: "Letterheads, Signatures and Logos", localUrl: "03 Sales and Marketing/Letterheads, Signatures and Logos/", driveUrl: "https://drive.google.com/drive/folders/1722F37w_XOuzFOTKWV6JK5GyLNN4ZLY0", locked: false },
+        { name: "Marketing and Sales",               localUrl: "03 Sales and Marketing/Marketing & Sales/",                 driveUrl: "https://drive.google.com/drive/folders/12aDNh8PKrDow5RCaQed13acP1FPMJIz4", locked: false },
+        { name: "Proposal Templates",                localUrl: "03 Sales and Marketing/Proposal Templates/",                driveUrl: "https://drive.google.com/drive/folders/1A_U5sl-0PWpGkxiDiOJACo1NewTdRkYf", locked: false },
+        { name: "Testimonials",                      localUrl: "03 Sales and Marketing/Testimonials/",                      driveUrl: "https://drive.google.com/drive/folders/1l4Fo98Qu4l6G9JJKirhFnYw_q6iTAapG", locked: false }
+      ]
+    },
+    {
+      id: "s04", number: "04", name: "Clients and Suppliers",
+      description: "Client project files, correspondence templates, supplier contacts, and the approved supplier list.",
+      localUrl: "04 Clients and Suppliers/", driveUrl: "https://drive.google.com/drive/folders/1aZwMGW3OzdroY6t4svxIhoF8XFEPuyhi",
+      accent: "#4a7a6a", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "Clients",                         localUrl: "04 Clients and Suppliers/Clients/",                        driveUrl: "https://drive.google.com/drive/folders/1MEAgUafvoSFFRw4fcOVpUFhN1IGVBSu5", locked: false },
+        { name: "Client Correspondence Templates", localUrl: "04 Clients and Suppliers/Client Correspondence Templates/", driveUrl: "https://drive.google.com/drive/folders/1xDChi8QK62E7-cnyLxpJtUQGE3mzLet8", locked: false },
+        { name: "Suppliers",                       localUrl: "04 Clients and Suppliers/Suppliers/",                      driveUrl: "https://drive.google.com/drive/folders/1Zo2lJpXC7VNqyrZBQEPUjGKg3jLml8XA", locked: false }
+      ]
+    },
+    {
+      id: "s05", number: "05", name: "People and HR",
+      description: "Recruitment, staff files, payroll, pension, HR policies, training and development, culture, and the staff handbook.",
+      localUrl: "05 People and HR/", driveUrl: "https://drive.google.com/drive/folders/1jHof3cW6cgCaWQTb8vC1HtTyGUVCLjVW",
+      accent: "#6a4a7a", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "01 Recruitment",            localUrl: "05 People and HR/01 Recruitment/",              driveUrl: "https://drive.google.com/drive/folders/1NysrbJ_XXntxsZc_-l3VnZcgQGl0z__b", locked: false },
+        { name: "02 Employees",              localUrl: "05 People and HR/02 Employees/",                driveUrl: "https://drive.google.com/drive/folders/1czPq3nzEEm1iogrfUR0dDs3nlaGe7COt", locked: true  },
+        { name: "03 Pay and Benefits",       localUrl: "05 People and HR/03 Pay and Benefits/",         driveUrl: "https://drive.google.com/drive/folders/1dllhd9As5BEpkKj6V7GrJENkWLpIqiFZ", locked: true  },
+        { name: "04 Culture & Engagement",   localUrl: "05 People and HR/04 Culture and Engagement/",   driveUrl: "https://drive.google.com/drive/folders/1Tcxnl3u3LtpkppLre90isTT_BG4aIINV", locked: false },
+        { name: "05 Learning & Development", localUrl: "05 People and HR/05 Learning and Development/", driveUrl: "https://drive.google.com/drive/folders/1TJX2j4F-Lck4Kbfixhatf3c76eMBW7UO", locked: false },
+        { name: "06 HR Templates",           localUrl: "05 People and HR/06 HR Templates/",             driveUrl: "https://drive.google.com/drive/folders/16BhI0wSSPP6Pjm84RKE_VaNvHRa_amvI", locked: false },
+        { name: "07 HR Policies",            localUrl: "05 People and HR/07 HR Policies/",              driveUrl: "https://drive.google.com/drive/folders/18mne-WIkfQHEnvR7gq7Oj1tDJXDKkBf2", locked: false },
+        { name: "08 HR Handbook",            localUrl: "05 People and HR/08 HR Handbook/",              driveUrl: "https://drive.google.com/drive/folders/1Z7VbgK3Ff9N--kFFhTnACOb1NsJCH6HI", locked: false },
+        { name: "09 Archive",                localUrl: "05 People and HR/09 Archive/",                  driveUrl: "https://drive.google.com/drive/folders/1sLjCmV5CstyXqh4NpCTBvoH8_CD6gunC", locked: false }
+      ]
+    },
+    {
+      id: "s06", number: "06", name: "Health and Safety",
+      description: "H&S management system, risk assessments, incident records, emergency procedures, COSHH, PPE, LOLER, and audits.",
+      localUrl: "06 Health and Safety/", driveUrl: "https://drive.google.com/drive/folders/161Dq2Gwv7rcR4-yoR9J6tvmpHCiH_30A",
+      accent: "#c0580a", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "01 H&S Management System",   localUrl: "06 Health and Safety/01 H&S Management System/",     driveUrl: "https://drive.google.com/drive/folders/17r517K0IMoJnz5hcM3oCmqz10TL6geIW", locked: false },
+        { name: "02 Risk Management",         localUrl: "06 Health and Safety/02 Risk Management/",           driveUrl: "https://drive.google.com/drive/folders/1XYV0CS11SiX0FsmeIdHsQtY0E324TgCL", locked: false },
+        { name: "03 Incident Management",     localUrl: "06 Health and Safety/03 Incident Management/",       driveUrl: "https://drive.google.com/drive/folders/1hD4tY4dymJjVa0cxYV4B4Wqb2Dn9i3QC", locked: false },
+        { name: "04 Emergency and Welfare",   localUrl: "06 Health and Safety/04 Emergency and Welfare/",     driveUrl: "https://drive.google.com/drive/folders/1KmagXlTdZeHYsufOFHPNAr8Qz3goK7Cn", locked: false },
+        { name: "05 Hazard Control",          localUrl: "06 Health and Safety/05 Hazard Control/",            driveUrl: "https://drive.google.com/drive/folders/1kCNBIYbAsiGgA1x-r3DqciutjP-BFYGp", locked: false },
+        { name: "06 Equipment & Plant",       localUrl: "06 Health and Safety/06 Equipment and Plant Safety/",driveUrl: "https://drive.google.com/drive/folders/1P-8FqyLTZ1JGfTxBT51gpF0k6j5y7qFn", locked: false },
+        { name: "07 Audits and Compliance",   localUrl: "06 Health and Safety/07 Audits and Compliance/",     driveUrl: "https://drive.google.com/drive/folders/1Cx-nRdM1CPLYYwSWIWkLwzEcEWuIUM9q", locked: false },
+        { name: "08 Environment",             localUrl: "06 Health and Safety/08 Environment/",               driveUrl: "https://drive.google.com/drive/folders/1c7stT4XXVrADgnWc5EOHpcerhaSHzOSG", locked: false },
+        { name: "09 Signs and Resources",     localUrl: "06 Health and Safety/09 Signs and Resources/",       driveUrl: "https://drive.google.com/drive/folders/1dNnN_Tp6s5E1LvWrswBdZiTfsEU6K1wj", locked: false },
+        { name: "10 Archive",                 localUrl: "06 Health and Safety/10 Archive/",                   driveUrl: "https://drive.google.com/drive/folders/17zKGQ87UD6lCe4-wZUEWX0Pc8AnHGU7c", locked: false }
+      ]
+    },
+    {
+      id: "s07", number: "07", name: "Operations",
+      description: "Admin processes, BigChange system guides, vehicles, yard management, plant and tools register, and job pack templates.",
+      localUrl: "07 Operations/", driveUrl: "https://drive.google.com/drive/folders/1BMCbEMW48b-YubhlZszm96IC69LJSV2i",
+      accent: "#2d6a4f", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "BigChange",                       localUrl: "07 Operations/BigChange/",                        driveUrl: "https://drive.google.com/drive/folders/1010X4ihB_X3ckfEsqsWRU-n8RF8-Msvf", locked: false },
+        { name: "Job Pack Templates",              localUrl: "07 Operations/Job Pack Templates/",               driveUrl: "https://drive.google.com/drive/folders/1UqlFSvlnBXv59hUuHqC_lcHgE-r37MUx", locked: false },
+        { name: "Office Processes & Procedures",   localUrl: "07 Operations/Office Processes and Procedures/",  driveUrl: "https://drive.google.com/drive/folders/1zfJ6i6ca0-vAlFl2NiefeNMuSu1pPmhc", locked: false },
+        { name: "Operational Procedures",          localUrl: "07 Operations/Operational Procedures/",           driveUrl: "https://drive.google.com/drive/folders/1Lr6lqNAO8C9RNGWlnGXh1F9C20R-ex-0", locked: false },
+        { name: "Plant and Tools Register",        localUrl: "07 Operations/Plant and Tools Register/",         driveUrl: "https://drive.google.com/drive/folders/15PONnOl2E65FxSBrOw58N8QkDqS7ajJP", locked: false },
+        { name: "Vehicles",                        localUrl: "07 Operations/Vehicles/",                         driveUrl: "https://drive.google.com/drive/folders/1TfrsKFlMt-y79MkPMm9VYaAO4uOt1X2P", locked: false },
+        { name: "Work Planning & Team Allocation", localUrl: "07 Operations/Work Planning and Team Allocation/",driveUrl: "https://drive.google.com/drive/folders/19J2relM7piY5DBX434JXpd8Q7ckxia0u", locked: false },
+        { name: "Yard",                            localUrl: "07 Operations/Yard/",                             driveUrl: "https://drive.google.com/drive/folders/1QjcCzDtfCMd49lUgf1eBBk70DMQE9bFH", locked: false }
+      ]
+    },
+    {
+      id: "s08", number: "08", name: "Compliance and Registers",
+      description: "Company certificates, accreditations, compliance and document registers, GDPR records, and waste transfer notes.",
+      localUrl: "08 Compliance and Registers/", driveUrl: "https://drive.google.com/drive/folders/17LlmLuieaQIOt0qhlHE8_VY-mWpTehpV",
+      accent: "#1a5a6a", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "Accreditations",       localUrl: "08 Compliance and Registers/Accreditations/",       driveUrl: "https://drive.google.com/drive/folders/1ZVyYzdyg76VNS_1DItQ5uvIqvcmk6wJD", locked: false },
+        { name: "Certificates",         localUrl: "08 Compliance and Registers/Certificates/",         driveUrl: "https://drive.google.com/drive/folders/1EAC2aDtBEiaJX0vMir4z5RrJIipygd8x", locked: false },
+        { name: "Compliance Register",  localUrl: "08 Compliance and Registers/Compliance Register/",  driveUrl: "https://drive.google.com/drive/folders/1_UEVccsU_MKrVSrqVLOR8k0A11OpKhoq", locked: false },
+        { name: "Document Register",    localUrl: "08 Compliance and Registers/Document Register/",    driveUrl: "https://drive.google.com/drive/folders/1kUD8wETxAX-Gmzti-63fZj07L-vyp6oX", locked: false },
+        { name: "GDPR",                 localUrl: "08 Compliance and Registers/GDPR/",                 driveUrl: "https://drive.google.com/drive/folders/1dnWOa_Bg1Np9FkJ_4bGlxoX3xZix7C2X", locked: false },
+        { name: "Waste Transfer Notes", localUrl: "08 Compliance and Registers/Waste Transfer Notes/", driveUrl: "https://drive.google.com/drive/folders/1cP30UKWJ4gHDsZOWS6ya-oB0PCogGdv_", locked: false }
+      ]
+    },
+    {
+      id: "s09", number: "09", name: "Library and Reference",
+      description: "External reference files, HRG reference library, equipment manuals, technical guidance, and toolbox talk resources.",
+      localUrl: "09 Library and Reference/", driveUrl: "https://drive.google.com/drive/folders/1AzIJ-A9Y9hFKItgKYp21nCfQ_tlxNwv3",
+      accent: "#3a6a2a", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "External Reference Files",           localUrl: "09 Library and Reference/External Reference Files/",           driveUrl: "https://drive.google.com/drive/folders/1cmjKQZ7nyvNXbLadFkZmbEawTrnEqNyT", locked: false },
+        { name: "HRG Reference Library",              localUrl: "09 Library and Reference/HRG Reference Library/",              driveUrl: "https://drive.google.com/drive/folders/1UNWchFfBaEPPETjNnknwezQ2a9ulmCpL", locked: false },
+        { name: "Manuals",                            localUrl: "09 Library and Reference/Manuals/",                            driveUrl: "https://drive.google.com/drive/folders/1iRz5HoNMGImir1r7r6lN4cQ7U2DhjYzw", locked: false },
+        { name: "Meeting & Toolbox Talk Resources",   localUrl: "09 Library and Reference/Meeting and Toolbox Talk Resources/",  driveUrl: "https://drive.google.com/drive/folders/1pauA0VitNpMPxYU-npSoAM-Xg4_QQjlP", locked: false },
+        { name: "Technical Guidance",                 localUrl: "09 Library and Reference/Technical Guidance/",                  driveUrl: "https://drive.google.com/drive/folders/11xGb-FTEi_1zWdHMtWtUoUgdxnO5SmHJ", locked: false }
+      ]
+    },
+    {
+      id: "s10", number: "10", name: "Archive",
+      description: "Old versions, superseded documents, and the original folder backup. Nothing is ever permanently deleted — moved here instead.",
+      localUrl: "10 Archive/", driveUrl: "https://drive.google.com/drive/folders/1AKiCkxWadjMpHbdDJ5DQ9I7NP3Oyc8_-",
+      accent: "#7a7a7a", restricted: false, updated: "March 2026",
+      sub: [
+        { name: "Archive by Year",      localUrl: "10 Archive/Archive by Year/",      driveUrl: "https://drive.google.com/drive/folders/1ANMYptC9liQ4Mrd5BxT7rBwzyZwc-ubm", locked: false },
+        { name: "Old Folder Structure", localUrl: "10 Archive/Old Folder Structure/", driveUrl: "https://drive.google.com/drive/folders/1JdLNF6Lt_joC7S2H7kk9tlL8ZwXA-9V8", locked: false },
+        { name: "Old Versions",         localUrl: "10 Archive/Old Versions/",         driveUrl: "https://drive.google.com/drive/folders/1bZqT4owoYiwohIDDn9FmGafvUJG3_WM1", locked: false },
+        { name: "Superseded Documents", localUrl: "10 Archive/Superseded Documents/", driveUrl: "https://drive.google.com/drive/folders/10qPObZTWeBpZXrwg8wolK5ZJwmUIJwxe", locked: false }
+      ]
+    }
+  ]
+
+};
+// =============================================================
+//  END OF CONFIGURATION
+// =============================================================
+
+// ── Section icons (inline SVG paths to avoid CDN dependency) ─
+const ICONS = {
+  "00": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  "01": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><rect x="2" y="8" width="4" height="14"/><rect x="10" y="8" width="4" height="14"/><rect x="18" y="8" width="4" height="14"/><polygon points="12 2 2 7 22 7"/></svg>`,
+  "02": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>`,
+  "03": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
+  "04": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  "05": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+  "06": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>`,
+  "07": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+  "08": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
+  "09": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+  "10": `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>`
+};
+
+const FILE_ICO = {
+  pdf:    { cls: "ico-pdf",    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>` },
+  word:   { cls: "ico-word",   svg: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>` },
+  excel:  { cls: "ico-excel",  svg: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>` },
+  folder: { cls: "ico-folder", svg: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>` },
+  other:  { cls: "ico-other",  svg: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>` }
+};
+
+const LOCK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
+const EXT_SVG  = `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+const FOLDER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`;
+
+function url(item) { return item.driveUrl || item.localUrl || '#'; }
+
+// ── Render: Quick Access grid ─────────────────────────────────
+function renderQA() {
+  document.getElementById('qaGrid').innerHTML = CONFIG.quickAccess.map(q => {
+    const ico = FILE_ICO[q.type] || FILE_ICO.other;
+    return `<a href="${url(q)}" target="_blank" rel="noopener noreferrer" class="qa-tile" title="Open: ${q.localUrl}">
+      <div class="qa-tile-ico ${ico.cls}">${ico.svg}</div>
+      <div>
+        <div class="qa-tile-name">${q.name}</div>
+        <div class="qa-tile-sec">${q.section}</div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+// ── Render: Sidebar Quick Access ──────────────────────────────
+function renderSbQA() {
+  document.getElementById('sbQA').innerHTML = CONFIG.quickAccess.map(q => {
+    const ico = FILE_ICO[q.type] || FILE_ICO.other;
+    return `<a href="${url(q)}" target="_blank" rel="noopener noreferrer" class="sb-qa-item" title="${q.localUrl}">
+      <span class="sb-qa-ico">${ico.svg}</span>
+      <span>
+        <div class="sb-qa-name">${q.name}</div>
+        <div class="sb-qa-sec">${q.section}</div>
+      </span>
+    </a>`;
+  }).join('');
+}
+
+// ── Render: Sidebar nav ───────────────────────────────────────
+function renderSbNav() {
+  document.getElementById('sbNav').innerHTML = CONFIG.sections.map(s => `
+    <a href="#${s.id}" class="sb-nav-item" data-id="${s.id}">
+      <span class="sb-nav-num">${s.number}</span>
+      <span>${s.name}</span>
+      ${s.restricted ? `<span class="sb-nav-lock">${LOCK_SVG}</span>` : ''}
+    </a>`).join('');
+}
+
+// ── Render: Section cards ─────────────────────────────────────
+function renderCards() {
+  document.getElementById('cardsGrid').innerHTML = CONFIG.sections.map(s => {
+    const chips = s.sub.map(sf => {
+      const href = url(sf);
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer"
+                 class="sf-chip ${sf.locked ? 'locked' : ''}" title="${sf.localUrl}">
+        ${sf.locked ? LOCK_SVG : ''}${sf.name}
+      </a>`;
+    }).join('');
+
+    const btnUrl  = url(s);
+    const btnIcon = s.driveUrl ? EXT_SVG : FOLDER_SVG;
+    const btnText = s.driveUrl ? 'Open in Google Drive' : 'Browse Folder';
+
+    return `
+    <div class="card" id="${s.id}">
+      <div class="card-accent-bar" style="background:${s.accent};"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-ico" style="background:${s.accent}20;color:${s.accent};">${ICONS[s.number] || ''}</div>
+          <span class="card-num">${s.number}</span>
+        </div>
+        <div class="card-name">${s.name}</div>
+        <div class="card-desc">${s.description}</div>
+        <div class="sf-label">Sub-folders</div>
+        <div class="sf-list">${chips}</div>
+      </div>
+      <div class="card-foot">
+        <span class="card-updated">Updated: ${s.updated}</span>
+        <a href="${btnUrl}" target="_blank" rel="noopener noreferrer">
+          <button class="btn-browse">${btnIcon} ${btnText}</button>
+        </a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Search ────────────────────────────────────────────────────
+let idx = [];
+function buildIdx() {
+  CONFIG.sections.forEach(s => {
+    idx.push({ kind: 'section',   text: s.name,  detail: s.description, id: s.id, href: url(s) });
+    s.sub.forEach(sf =>
+      idx.push({ kind: 'subfolder', text: sf.name, detail: `In ${s.name}`, id: s.id, href: url(sf) })
+    );
+  });
+  CONFIG.quickAccess.forEach(q =>
+    idx.push({ kind: 'document',  text: q.name,  detail: `Quick Access · ${q.section}`, id: null, href: url(q) })
+  );
+}
+
+function hl(str, q) {
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return str.replace(re, '<mark>$1</mark>');
+}
+
+const FOLD_ICO = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`;
+const SUB_ICO  = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>`;
+const DOC_ICO  = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>`;
+const kindIcon = { section: FOLD_ICO, subfolder: SUB_ICO, document: DOC_ICO };
+
+let debounce;
+const inp = document.getElementById('searchInput');
+const res = document.getElementById('searchResults');
+
+inp.addEventListener('input', e => {
+  clearTimeout(debounce);
+  debounce = setTimeout(() => doSearch(e.target.value.trim()), 140);
+});
+inp.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { res.classList.remove('open'); inp.value = ''; }
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) res.classList.remove('open');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement !== inp) { e.preventDefault(); inp.focus(); }
+});
+
+function doSearch(q) {
+  if (!q || q.length < 2) { res.classList.remove('open'); return; }
+  const lq = q.toLowerCase();
+  const hits = idx.filter(r => r.text.toLowerCase().includes(lq) || r.detail.toLowerCase().includes(lq));
+  if (!hits.length) {
+    res.innerHTML = `<div class="sr-empty">No results for "<strong>${q}</strong>"</div>`;
+    res.classList.add('open'); return;
+  }
+  const groups = { section: [], subfolder: [], document: [] };
+  hits.forEach(h => groups[h.kind].push(h));
+  const labels = { section: 'Sections', subfolder: 'Sub-folders', document: 'Quick Access' };
+  let html = '';
+  ['section', 'subfolder', 'document'].forEach(k => {
+    if (!groups[k].length) return;
+    html += `<div class="sr-group">${labels[k]}</div>`;
+    groups[k].forEach(r => {
+      const isAnchor = r.id && r.kind !== 'document';
+      const href = isAnchor ? `#${r.id}` : r.href;
+      html += `<a class="sr-item" href="${href}" ${!isAnchor ? 'target="_blank" rel="noopener noreferrer"' : ''}
+                  onclick="res.classList.remove('open')">
+        <span class="sr-ico">${kindIcon[r.kind]}</span>
+        <span>
+          <div class="sr-name">${hl(r.text, q)}</div>
+          <div class="sr-path">${r.detail}</div>
+        </span>
+      </a>`;
+    });
+  });
+  res.innerHTML = html;
+  res.classList.add('open');
+}
+
+// ── Scroll spy ────────────────────────────────────────────────
+function initScrollSpy() {
+  const navLinks = document.querySelectorAll('.sb-nav-item');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(n => n.classList.remove('active'));
+        const link = document.querySelector(`.sb-nav-item[data-id="${e.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { threshold: 0.25 });
+  CONFIG.sections.forEach(s => { const el = document.getElementById(s.id); if (el) obs.observe(el); });
+}
+
+// ── Back to top ───────────────────────────────────────────────
+const btt = document.getElementById('btt');
+window.addEventListener('scroll', () => btt.classList.toggle('show', window.scrollY > 400));
+btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+// ── Init ──────────────────────────────────────────────────────
+function init() {
+  const meta = `Last updated: ${CONFIG.lastUpdated}`;
+  document.getElementById('headerMeta').textContent  = meta;
+  document.getElementById('footerMeta').textContent  = meta;
+  document.getElementById('footerContact').textContent = CONFIG.contact;
+  renderQA();
+  renderSbQA();
+  renderSbNav();
+  renderCards();
+  buildIdx();
+  initScrollSpy();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
