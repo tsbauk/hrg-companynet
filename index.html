@@ -1435,13 +1435,9 @@ function renderReaderDoc(idx) {
 }
 
 if (CONFIG.driveClientId) {
-  if (typeof google !== 'undefined') {
-    initFileDrawer();
-  } else {
-    window.addEventListener('load', function() {
-      if (typeof google !== 'undefined') initFileDrawer();
-    });
-  }
+  window.addEventListener('load', function() {
+    if (typeof google !== 'undefined') initFileDrawer();
+  });
 }
 </script>
 
