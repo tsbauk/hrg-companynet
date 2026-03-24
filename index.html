@@ -589,6 +589,41 @@
     .md-body hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
     .md-body a { color: var(--brand); text-decoration: underline; }
     .md-body blockquote { border-left: 3px solid var(--brand-light); margin: 0 0 10px; padding: 4px 12px; color: var(--text-secondary); background: var(--brand-bg); border-radius: 0 4px 4px 0; }
+
+    /* ── DOC READER ───────────────────────────────────────────────── */
+    .reader-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 300; }
+    .reader-backdrop.open { opacity: 1; pointer-events: all; }
+    .reader { position: fixed; inset: 0; background: #fff; transform: translateY(100%); transition: transform .3s ease; z-index: 301; display: flex; flex-direction: column; }
+    .reader.open { transform: translateY(0); }
+    .reader-hdr { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--brand-dark); color: #fff; flex-shrink: 0; gap: 12px; }
+    .reader-title { font-size: .95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .reader-close { background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer; padding: 4px 10px; border-radius: 6px; opacity: .8; flex-shrink: 0; line-height: 1; }
+    .reader-close:hover { opacity: 1; background: rgba(255,255,255,.15); }
+    .reader-layout { display: flex; flex: 1; overflow: hidden; }
+    .reader-nav { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; padding: 12px 0; background: var(--brand-bg); }
+    .reader-nav-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); padding: 8px 18px 4px; }
+    .reader-nav-btn { display: block; width: 100%; text-align: left; background: none; border: none; padding: 10px 18px; font-size: .875rem; color: var(--text-primary); cursor: pointer; border-left: 3px solid transparent; font-family: inherit; line-height: 1.4; transition: background .12s; }
+    .reader-nav-btn:hover { background: #e8f5e9; color: var(--brand-dark); }
+    .reader-nav-btn.active { background: #e8f5e9; color: var(--brand-dark); font-weight: 600; border-left-color: var(--brand); }
+    .reader-content { flex: 1; overflow-y: auto; padding: 36px 52px; }
+    .reader-content h1 { font-size: 1.55rem; font-weight: 700; color: var(--text-primary); margin: 0 0 6px; padding-bottom: 14px; border-bottom: 2px solid var(--border); }
+    .reader-content h2 { font-size: 1.1rem; font-weight: 600; color: var(--brand-dark); margin: 28px 0 10px; }
+    .reader-content h3 { font-size: .95rem; font-weight: 600; color: var(--text-primary); margin: 20px 0 8px; }
+    .reader-content p { color: var(--text-secondary); line-height: 1.75; margin: 0 0 14px; }
+    .reader-content table { border-collapse: collapse; width: 100%; margin: 16px 0 20px; font-size: .875rem; }
+    .reader-content th { background: #e8f5e9; color: var(--brand-dark); font-weight: 600; padding: 9px 14px; border: 1px solid #c8e6c9; text-align: left; }
+    .reader-content td { padding: 8px 14px; border: 1px solid var(--border); color: var(--text-secondary); }
+    .reader-content tr:nth-child(even) td { background: #fafafa; }
+    .reader-content ul, .reader-content ol { padding-left: 24px; margin: 0 0 14px; color: var(--text-secondary); line-height: 1.75; }
+    .reader-content li { margin-bottom: 4px; }
+    .reader-content strong { color: var(--text-primary); font-weight: 600; }
+    .reader-content code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: .85em; }
+    .reader-content hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .reader-content blockquote { border-left: 3px solid var(--brand-light); margin: 16px 0; padding: 8px 16px; background: var(--brand-bg); color: var(--text-secondary); border-radius: 0 4px 4px 0; }
+    @media (max-width: 640px) {
+      .reader-nav { display: none; }
+      .reader-content { padding: 20px 16px; }
+    }
   </style>
 </head>
 <body>
@@ -727,10 +762,14 @@ const CONFIG = {
       localUrl: "00 Start Here/", driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW",
       accent: "#2d6a4f", restricted: false, updated: "March 2026",
       sub: [
-        { name: "CompanyNet Index",          localUrl: "00 Start Here/CompanyNet Index.md",                        driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false },
-        { name: "How to Use CompanyNet",     localUrl: "00 Start Here/How to Use CompanyNet.md",                   driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false },
-        { name: "Document Naming Rules",     localUrl: "00 Start Here/Document Naming Rules.md",                   driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false },
-        { name: "New Starter Guide",         localUrl: "00 Start Here/New Starter Guide.md",                       driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false },
+        { name: "CompanyNet Index",          localUrl: "00 Start Here/CompanyNet Index.md",                        driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false,
+          content: `# CompanyNet Index\n\n**Last updated:** March 2026\n**Maintained by:** HRG Leadership Team\n\n---\n\n## Folder Structure at a Glance\n\n| Folder | What's Inside |\n|--------|---------------|\n| **00 Start Here** | This index, how-to guide, most used files, document naming rules |\n| **01 Leadership and Company** | Vision/mission, structure chart, business plan, company handbook, all-company policies |\n| **02 Finance and Commercial** | Accountancy, banking, pricing, insurances, tenders, terms and conditions |\n| **03 Sales and Marketing** | Marketing materials, brand assets, letterheads, logos, proposal templates, case studies |\n| **04 Clients and Suppliers** | Client files and correspondence, supplier information, approved supplier list |\n| **05 People and HR** | Recruitment, staff files, payroll, HR policies, training, culture, HR handbook |\n| **06 Health and Safety** | H&S management system, risk assessments, incidents, COSHH, LOLER, audits |\n| **07 Operations** | Admin processes, operational procedures, BigChange, vehicles, yard, job packs |\n| **08 Compliance and Registers** | Compliance register, certificates, accreditations, GDPR, waste transfer notes |\n| **09 Library and Reference** | External reference materials, HRG library, manuals, technical guidance, toolbox talks |\n| **10 Archive** | Old versions, superseded documents, archived files — nothing is deleted, moved here |\n\n---\n\n## Key File Locations\n\n| Document | Location |\n|----------|----------|\n| H&S Policy | 06 Health and Safety / 01 H&S Management System |\n| Staff Handbook | 05 People and HR / 08 HR Handbook |\n| Risk Assessments | 06 Health and Safety / 02 Risk Management |\n| LOLER Records | 06 Health and Safety / 06 Equipment and Plant Safety / LOLER |\n| COSHH | 06 Health and Safety / 05 Hazard Control / COSHH |\n| Payroll | 05 People and HR / 03 Pay and Benefits / Payroll |\n| Tenders | 02 Finance and Commercial / Tenders |\n| Company Certificates | 08 Compliance and Registers / Certificates |\n| Vehicles | 07 Operations / Vehicles |\n| Brand/Logos | 03 Sales and Marketing / Brand Assets |\n| Company Policies (all) | 01 Leadership and Company / Policies |\n| HR Policies | 05 People and HR / 07 HR Policies |\n| BigChange | 07 Operations / BigChange |\n| Toolbox Talks | 09 Library and Reference / Meeting and Toolbox Talk Resources |\n| GDPR | 08 Compliance and Registers / GDPR |\n| Accident Reporting | 06 Health and Safety / 03 Incident Management |\n\n---\n\n*To suggest improvements to this index, contact the CompanyNet administrator.*` },
+        { name: "How to Use CompanyNet",     localUrl: "00 Start Here/How to Use CompanyNet.md",                   driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false,
+          content: `# How to Use CompanyNet\n\n---\n\n## What is CompanyNet?\n\nCompanyNet is HRG's internal file system — the single source of truth for all company documents, policies, procedures, forms, and records. Everyone in the team should use CompanyNet for:\n\n- Finding current versions of policies, procedures and forms\n- Storing completed records and documents\n- Accessing reference materials and manuals\n- Sharing files with colleagues\n\n---\n\n## Finding Files\n\nStart with the **CompanyNet Index** in this folder — it shows where everything lives.\n\nThe folder structure uses numbered top-level folders (00–10) to keep things in order:\n\n- **00–01:** Company direction and start here\n- **02–04:** Commercial and client-facing\n- **05–06:** People and safety\n- **07–09:** Operations and reference\n- **10:** Archive — old versions and superseded documents\n\n---\n\n## Naming Convention\n\nAll new documents should follow this naming style:\n\n| Prefix | Use For | Example |\n|--------|---------|--------|\n| POLICY | Company policies | POLICY - Annual Leave - v1.0 |\n| PROCEDURE | Step-by-step procedures | PROCEDURE - End of Day Yard Check - v2.0 |\n| FORM | Forms to be filled in | FORM - Vehicle Daily Check |\n| TEMPLATE | Blank templates | TEMPLATE - Risk Assessment |\n| REGISTER | Ongoing registers/logs | REGISTER - PPE Issue Log |\n| GUIDE | How-to guides | GUIDE - BigChange Quoting Process |\n\n**Version numbers:** Use v1.0, v1.1, v2.0 etc. When you update a document, increment the version and move the old version to the Archive.\n\n---\n\n## Adding New Files\n\n1. Save to the most appropriate numbered folder\n2. Use the naming convention above\n3. If unsure where something belongs, check the Index or ask a colleague\n4. Never save personal files or non-work content to CompanyNet\n\n---\n\n## Updating Existing Documents\n\n1. Open the current version from its folder\n2. Save your changes as a new version (update the version number in the filename)\n3. Move the old version to 10 Archive / Old Versions\n4. Do not delete the old version\n\n---\n\n## Restricted Folders\n\nSome folders are restricted to certain team members only:\n- Staff Files and Payroll — HR and Directors only\n- Accountancy — Finance team and Directors only\n- Tenders — Commercial team and Directors only\n\nIf you need access to a restricted folder, speak to your manager.\n\n---\n\n*For questions about CompanyNet, contact the office manager.*` },
+        { name: "Document Naming Rules",     localUrl: "00 Start Here/Document Naming Rules.md",                   driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false,
+          content: `# Document Naming Rules — CompanyNet\n\nAll documents stored in CompanyNet should follow these naming rules to keep things consistent and easy to find.\n\n---\n\n## Standard Format\n\n**[PREFIX] - [Document Name] - [Version]**\n\n### Prefixes\n\n| Prefix | Use For |\n|--------|--------|\n| POLICY | Company or departmental policies |\n| PROCEDURE | Step-by-step operational procedures |\n| FORM | Fillable forms |\n| TEMPLATE | Blank document templates |\n| REGISTER | Ongoing logs and registers |\n| GUIDE | How-to or reference guides |\n| PLAN | Plans (business, emergency, project) |\n| RECORD | Completed records |\n\n### Examples\n\n- POLICY - Annual Leave - v1.0.pdf\n- PROCEDURE - End of Day Yard Check - v2.0.docx\n- FORM - Vehicle Daily Check.docx\n- TEMPLATE - Risk Assessment.docx\n- REGISTER - PPE Issue Log.xlsx\n- GUIDE - BigChange Quoting Process.pdf\n\n---\n\n## Version Numbers\n\n- Start at v1.0 for new documents\n- Minor edits: v1.1, v1.2 etc.\n- Major rewrites: v2.0, v3.0 etc.\n- Always include version in the filename\n- Move old versions to 10 Archive / Old Versions\n\n---\n\n## Folder Naming\n\n- Use numbered folders where order matters: 01 Recruitment, 02 Employees etc.\n- Use plain descriptive names otherwise\n- No special characters except hyphens and ampersands (&)\n- Use title case: Health and Safety Policy not health and safety policy\n\n---\n\n## Dates in Filenames\n\nOnly include a date if it's a time-specific record (e.g., meeting minutes, accident reports):\n- Format: YYYY-MM-DD (e.g., 2025-07-15)\n- Example: RECORD - Toolbox Talk - 2025-07-15\n\n---\n\n*Last updated: March 2026*` },
+        { name: "New Starter Guide",         localUrl: "00 Start Here/New Starter Guide.md",                       driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false,
+          content: `# New Starter Guide — CompanyNet\n\nWelcome to HRG! This guide will help you find the things you need most in your first few weeks.\n\n---\n\n## Where to Find Key Documents\n\n### Your Employment\n\n| Document | Location |\n|----------|----------|\n| Staff Handbook | 05 People and HR / 08 HR Handbook |\n| HR Policies | 05 People and HR / 07 HR Policies |\n| Holiday, sickness, absence policies | 05 People and HR / 07 HR Policies |\n| Your contract and offer letter | Provided by HR on joining |\n\n### Health and Safety\n\n| Document | Location |\n|----------|----------|\n| H&S Policy | 06 Health and Safety / 01 H&S Management System |\n| Risk Assessments | 06 Health and Safety / 02 Risk Management |\n| Emergency procedures | 06 Health and Safety / 04 Emergency and Welfare |\n| First aid | 06 Health and Safety / 04 Emergency and Welfare / First aid |\n| Fire procedures | 06 Health and Safety / 04 Emergency and Welfare / Fire |\n| PPE | 06 Health and Safety / 05 Hazard Control / PPE |\n\n### Operations and Day-to-Day\n\n| Document | Location |\n|----------|----------|\n| BigChange guides | 07 Operations / BigChange |\n| Admin processes and how-tos | 07 Operations / Office Processes and Procedures |\n| Vehicle daily checks | 07 Operations / Vehicles |\n| Yard procedures | 07 Operations / Yard |\n\n---\n\n## Most Used Files\n\nSee the **Most Used Files** subfolder in 00 Start Here for shortcuts to the most commonly accessed documents.\n\n---\n\n## Questions?\n\nSpeak to your line manager or contact the office team. The full CompanyNet Index in this folder shows where everything lives.\n\n---\n\n*Last updated: March 2026*` },
         { name: "Most Used Files",           localUrl: "00 Start Here/Most Used Files/",                           driveUrl: "https://drive.google.com/drive/folders/1m4SUNBi4_qqtN2afDtEDix92UYq9Ki0w", locked: false },
         { name: "Restricted Folders Guide",  localUrl: "00 Start Here/RESTRICTED FOLDERS - Action Required.md",    driveUrl: "https://drive.google.com/drive/folders/1zZSjStsjFjf9y-ZHxGSZsOUVpLL4j1pW", locked: false }
       ]
@@ -1123,8 +1162,13 @@ function initFileDrawer() {
     var browseA = e.target.closest('a[href*="drive.google.com"]:not(.sf-chip)');
     if (chip && !chip.classList.contains('locked')) {
       e.preventDefault();
+      var chipName = chip.textContent.trim();
+      // Check if this chip has in-app doc content (Start Here guides)
+      var s00 = CONFIG.sections.find(function(s) { return s.id === 's00'; });
+      var docIdx = s00 ? s00.sub.findIndex(function(d) { return d.content && d.name === chipName; }) : -1;
+      if (docIdx >= 0) { openReader(docIdx); return; }
       var id = extractDriveId(chip.href);
-      if (id) openDrawer(id, chip.textContent.trim());
+      if (id) openDrawer(id, chipName);
     } else if (browseA) {
       e.preventDefault();
       var id2 = extractDriveId(browseA.href);
@@ -1341,8 +1385,54 @@ function extractDriveId(url) {
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeDrawer();
+  if (e.key === 'Escape') { closeDrawer(); closeReader(); }
 });
+
+// ── DOC READER ────────────────────────────────────────────────────
+var _readerIdx = 0;
+
+function openReader(docIdx) {
+  var s00 = CONFIG.sections.find(function(s) { return s.id === 's00'; });
+  if (!s00) return;
+  _readerIdx = docIdx;
+  renderReaderNav();
+  renderReaderDoc(_readerIdx);
+  document.getElementById('reader').classList.add('open');
+  document.getElementById('readerBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeReader() {
+  document.getElementById('reader').classList.remove('open');
+  document.getElementById('readerBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderReaderNav() {
+  var s00 = CONFIG.sections.find(function(s) { return s.id === 's00'; });
+  var docs = s00 ? s00.sub.filter(function(d) { return d.content; }) : [];
+  document.getElementById('readerNav').innerHTML =
+    '<div class="reader-nav-label">Guides</div>' +
+    docs.map(function(d, i) {
+      return '<button class="reader-nav-btn' + (i === _readerIdx ? ' active' : '') +
+        '" onclick="renderReaderDoc(' + i + ')">' + fEsc(d.name) + '</button>';
+    }).join('');
+}
+
+function renderReaderDoc(idx) {
+  var s00 = CONFIG.sections.find(function(s) { return s.id === 's00'; });
+  var docs = s00 ? s00.sub.filter(function(d) { return d.content; }) : [];
+  if (idx < 0 || idx >= docs.length) return;
+  _readerIdx = idx;
+  var doc = docs[idx];
+  document.getElementById('readerTitle').textContent = doc.name;
+  var html = (typeof marked !== 'undefined') ? marked.parse(doc.content) : '<pre>' + fEsc(doc.content) + '</pre>';
+  document.getElementById('readerContent').innerHTML = html;
+  document.getElementById('readerContent').scrollTop = 0;
+  document.querySelectorAll('.reader-nav-btn').forEach(function(b, i) {
+    b.classList.toggle('active', i === idx);
+  });
+}
 
 if (CONFIG.driveClientId) {
   if (typeof google !== 'undefined') {
@@ -1354,6 +1444,19 @@ if (CONFIG.driveClientId) {
   }
 }
 </script>
+
+<!-- DOC READER -->
+<div class="reader-backdrop" id="readerBackdrop" onclick="closeReader()"></div>
+<div class="reader" id="reader" role="dialog" aria-modal="true" aria-label="Document reader">
+  <div class="reader-hdr">
+    <span class="reader-title" id="readerTitle">Start Here</span>
+    <button class="reader-close" id="readerClose" onclick="closeReader()" aria-label="Close reader">&#x2715;</button>
+  </div>
+  <div class="reader-layout">
+    <nav class="reader-nav" id="readerNav"></nav>
+    <div class="reader-content" id="readerContent"></div>
+  </div>
+</div>
 
 <!-- FILE BROWSER DRAWER -->
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
